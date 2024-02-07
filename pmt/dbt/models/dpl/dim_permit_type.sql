@@ -1,5 +1,5 @@
 {{config(materialized='table',
-		  unique_key = ['src_sys_code','dim_permit_type']
+		  unique_key = ['src_sys_code','permit_type_code']
 		) 
 }}
 with ats_data as (

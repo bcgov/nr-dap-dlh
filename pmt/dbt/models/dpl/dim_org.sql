@@ -1,5 +1,5 @@
 {{ config(materialized='table',
-		  unique_key = ['src_sys_code','project_id']
+		  unique_key = ['src_sys_code','org_unit_code']
 		) 
 }}
 with corp_data as (
