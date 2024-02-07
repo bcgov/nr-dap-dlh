@@ -4,15 +4,15 @@
 }}
 with ats_data as (
 	Select distinct 'ATS' 					as src_sys_code
-	  ,aai.authorization_instrument_id 		as permit_type_code
+	  ,aai.authorization_instrument_id::varchar(25) 		as permit_type_code
 	  ,aai.authorization_instrument_name 	as permit_type_description
 	from fdw_ods_ats_replication.ats_authorization_instruments aai 
 	where 1=1
 )
 ,
-with fta_data as (
+fta_data as (
 Select distinct 'FTA' as src_sys_code
- ,pfu.file_type_code AS permit_type_code
+ ,pfu.file_type_code::varchar(25) AS permit_type_code
 , ftc.description AS permit_type_description
  from fdw_ods_fta_replication.prov_forest_use pfu
  left join fdw_ods_fta_replication.file_type_code ftc 
