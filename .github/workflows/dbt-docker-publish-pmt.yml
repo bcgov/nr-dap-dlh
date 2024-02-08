@@ -7,10 +7,10 @@ on:
     branches: [ "main" ]
 
 env:
-  # Abi: image name is ghcr.io/bcgov/nr-dbt-project-ods-dlh:main
+  # Vish: image name is ghcr.io/bcgov/nr-dap-dlh-pmt:main
   REGISTRY: ghcr.io
-  DBT_PATH: ods_dlh_data_processing
-  IMAGE_NAME: ${{ github.repository }}-ods-dlh
+  DBT_PATH: pmt/dbt/pmt_dbt/
+  IMAGE_NAME: ${{ github.repository }}-pmt
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
-          # Abi: adding this to help the action find the Dockerfile to build from
+          # Vish: adding this to help the action find the Dockerfile to build from
           context: ${{ env.DBT_PATH }}/       
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
