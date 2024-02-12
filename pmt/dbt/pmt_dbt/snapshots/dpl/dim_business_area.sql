@@ -19,7 +19,7 @@ with corp_data as (
 	Select 'CORP' as src_sys_code,'PAR'  as business_area_code,'Parks'	 						as business_area_description,'CORP|PAR'  as unqid union all
 	Select 'CORP' as src_sys_code,'ROA'  as business_area_code,'Roads'	 						as business_area_description,'CORP|ROA'  as unqid union all
 	Select 'CORP' as src_sys_code,'RECS' as business_area_code,'Recreation Sites and Trails'	as business_area_description,'CORP|RECS' as unqid union all
-	Select 'CORP' as src_sys_code,'WAT'  as business_area_code,'Water'	 						as business_area_description,'CORP|WAT'  as unqid;
+	Select 'CORP' as src_sys_code,'WAT'  as business_area_code,'Water'	 						as business_area_description,'CORP|WAT'  as unqid
 )
 --insert into pmt_dpl.dim_business_area
 select *
