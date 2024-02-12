@@ -13,7 +13,7 @@
 
 with ats_data as (
 	select 'ATS' as src_sys_code,
-	prj.project_id,  
+	prj.project_id:: varchar(20),  
 	--replace(replace(prj.location::text, chr(10), NULL::text), chr(13), NULL::text) AS project_location, ---not sure what these replace values are supposed to do? returns null
 	prj.project_name,
 	prj.location,
@@ -25,9 +25,48 @@ with ats_data as (
 		on (prj.managing_fcbc_region_id = amfr.managing_fcbc_region_id )
 		where 1=1
 		and prj.project_status_code = '1'
+),
+fta_data as (
+	Select distinct 'FTA'	as src_sys_code
+	,null as project_id
+	,null as project_name
+	,null as location
+	,null as project_status_code
+	,null as region_name
+	,'FTA' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
+
+)
+,
+rrs_rp_data as (
+	Select 'RRS_RP'	as src_sys_code
+	,null as project_id
+	,null as project_name
+	,null as location
+	,null as project_status_code
+	,null as region_name
+	,'RRS_RP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
+)
+,
+rrs_rup_data as (
+	Select 'RRS_RUP'	as src_sys_code
+	,null as project_id
+	,null as project_name
+	,null as location
+	,null as project_status_code
+	,null as region_name
+	,'RRS_RUP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
 )
 --insert into pmt_dpl.dim_project
 select * from ats_data
+
+union ALL
+select * from fta_data
+
+union ALL
+select * from rrs_rup_data
+
+union ALL
+select * from rrs_rp_data
 ;
 
 {% endsnapshot %}
