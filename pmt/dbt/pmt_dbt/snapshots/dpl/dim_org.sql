@@ -33,6 +33,5 @@ with corp_data as (
 	)
 --insert into pmt_dpl.dim_org
   select * from corp_data
-;
 
 {% endsnapshot %}
