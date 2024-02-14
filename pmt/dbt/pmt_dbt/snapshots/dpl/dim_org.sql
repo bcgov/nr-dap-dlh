@@ -16,18 +16,23 @@ with corp_data as (
 	  ,org.org_unit_code as org_unit_code
 	  ,org.org_unit_name as  org_unit_description
 	  ,org.rollup_region_code as rollup_region_code
-	  ,null as rollup_region_description
+	  ,reg.org_unit_name as rollup_region_description
 	  ,org.rollup_dist_code as rollup_district_code
-	  ,null as  rollup_district_description
-	  ,null as roll_up_area_code
-	  ,null as roll_up_area_description
+	  ,rdis.org_unit_name as  rollup_district_description
+	  ,case when org.rollup_dist_code in ('DCC','DQU','DMH','DRM','DSE','DOS','DCS','DKA') then 'SA'
+	        when org.rollup_dist_code in ('DFN','DPC','DPG','DMK','DVA','DKM','DSS','DND') then 'NA'
+	        when org.rollup_dist_code in ('DSC','DSQ','DCK','DNI','DSI','DQC','DCR') then 'CA' end as roll_up_area_code
+	  ,case when org.rollup_dist_code in ('DCC','DQU','DMH','DRM','DSE','DOS','DCS','DKA') then 'South Area'
+	        when org.rollup_dist_code in ('DFN','DPC','DPG','DMK','DVA','DKM','DSS','DND') then 'North Area'
+	        when org.rollup_dist_code in ('DSC','DSQ','DCK','DNI','DSI','DQC','DCR') then 'Coast Area' end as roll_up_area_description
 	  -- Combine multiple keys into a single composite_key
-      ,'CORP' || '|'||  coalesce(cast(org_unit_code as varchar),'~') as unqid
+      ,'CORP' || '|'||  coalesce(cast(org.org_unit_code as varchar),'~') as unqid
 	from fdw_ods_fta_replication.org_unit org
-)
+	left join fdw_ods_fta_replication.org_unit reg on (org.rollup_region_code = reg.org_unit_code)
+	left join fdw_ods_fta_replication.org_unit rdis on (org.rollup_dist_code = rdis.org_unit_code)
+	)
 --insert into pmt_dpl.dim_org
-select *
-	from corp_data
+  select * from corp_data
 ;
 
 {% endsnapshot %}

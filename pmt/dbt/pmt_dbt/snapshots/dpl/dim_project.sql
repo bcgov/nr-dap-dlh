@@ -18,7 +18,7 @@ with ats_data as (
 	prj.project_name,
 	prj.location,
 	prj.project_status_code,
-	amfr.region_name,
+	amfr.region_name as project_region_description,
 	'ATS' || '|'||  coalesce(cast(prj.project_id as varchar),'~') as unqid
 	  from fdw_ods_ats_replication.ats_projects prj
 	  left join fdw_ods_ats_replication.ats_managing_fcbc_regions amfr  ---dim_regions
@@ -32,7 +32,7 @@ fta_data as (
 	,null as project_name
 	,null as location
 	,null as project_status_code
-	,null as region_name
+	,null as project_region_description
 	,'FTA' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
 
 )
@@ -43,7 +43,7 @@ rrs_rp_data as (
 	,null as project_name
 	,null as location
 	,null as project_status_code
-	,null as region_name
+	,null as project_region_description
 	,'RRS_RP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
 )
 ,
@@ -53,7 +53,7 @@ rrs_rup_data as (
 	,null as project_name
 	,null as location
 	,null as project_status_code
-	,null as region_name
+	,null as project_region_description
 	,'RRS_RUP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
 )
 --insert into pmt_dpl.dim_project
