@@ -24,9 +24,10 @@ with corp_data as (
 	'Resource Roads System - Road Permits' as src_sys_description,
 	'RRS_RP' as unqid
 	union ALL
-	select 'RRS_RUP' as src_sys_code,
-	'Resource Roads System - Road Use Permits' as src_sys_description,
-	'RRS_RUP' as unqid
+	select 'CORP' as src_sys_code,
+	'Corporate' as src_sys_description,
+	'CORP' as unqid
+	
 )
 --insert into pmt_dpl.dim_source_system
 select * from corp_data

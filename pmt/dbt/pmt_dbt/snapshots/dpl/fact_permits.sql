@@ -32,7 +32,8 @@ with ats_data as (
    WHEN ats.authorization_instrument_id = ANY (ARRAY[21, 107]) THEN 'RECS'
    ELSE NULL
    END as business_area_code
-  ,ats.authorization_id::varchar 				as permit_id
+   ,ats.authorization_id::varchar 		as application_id
+  ,null ::varchar 						as permit_id
   ,ats.file_number 						as app_file_id
   ,ats.authorization_status_code 		as authorization_status_code
   ,ats.project_id::varchar(20)			as project_id
@@ -79,6 +80,7 @@ Select
 'FTA' as src_sys_code
 ,'FOR' as ministry_code
 ,'FORESTS' as business_area_code
+,tenure_app_id::varchar as application_id
 ,cutting_permit_id as permit_id
 ,forest_file_id as app_file_id
 ,tenure_application_state_code as authorization_status_code
@@ -95,7 +97,7 @@ Select
 ,case when tenure_application_state_code = 'REJ' then adjudication_date end as app_rejected_date
 ,adjudication_date as app_adjudication_date
 ,permit_status_code as harvest_auth_status
-,null::int  as harvest_area_sq_m
+,harvest_area::int  as harvest_area_sq_m
 ,org_unit_code as permit_org_unit_code
 ,extract(epoch from age)/86400 as application_age
 ,map_feature_id as map_feature_id
@@ -318,7 +320,13 @@ UNION ALL
              JOIN fdw_ods_fta_replication.harvest_type_code htc ON hva.harvest_type_code = htc.harvest_type_code
              JOIN fdw_ods_fta_replication.harvest_auth_status_code hasc ON hasc.harvest_auth_status_code = hva.harvest_auth_status_code
           LEFT JOIN fdw_ods_fta_replication.tenure_application_map_feature tamf ON tamf.map_feature_id = hag.map_feature_id
-             LEFT JOIN fdw_ods_fta_replication.tenure_application ta ON ta.forest_file_id = hva.forest_file_id and hva.cutting_permit_id = ta.cutting_permit_id
+             LEFT JOIN (
+				select row_number()over(partition by forest_file_id, cutting_permit_id order by tenure_app_id desc) rn, * 
+				from fdw_ods_fta_replication.tenure_application
+				) ta ON 
+				ta.forest_file_id = hva.forest_file_id 
+				and hva.cutting_permit_id = ta.cutting_permit_id 
+				and ta.rn =1
              left join fdw_ods_fta_replication.org_unit ou on (ta.org_unit_no = ou.org_unit_no)
              LEFT JOIN fdw_ods_fta_replication.tenure_application_state_code tasc ON tasc.tenure_application_state_code = ta.tenure_application_state_code
              LEFT JOIN fdw_ods_fta_replication.tenure_application_type_code tatc ON tatc.tenure_application_type_code = ta.tenure_application_type_code
@@ -330,6 +338,7 @@ UNION ALL
 	'RRS_RUP' as src_sys_code
 	,'FOR' as ministry_code
 	,'ROADS' as business_area_code
+	,permit_id as application_id
 	,permit_id as permit_id
 	,road_submission_id::varchar(32)  as app_file_id
 	,submission_status_code as authorization_status_code
@@ -415,6 +424,7 @@ UNION ALL
 	'RRS_RP' as src_sys_code
 	,'FOR' as ministry_code
 	,'ROADS' as business_area_code
+	,permit_id as application_id
 	,permit_id as permit_id
 	,application_id::varchar(32) as app_file_id
 	,application_status as authorization_status_code
@@ -485,7 +495,7 @@ UNION ALL
                     rtsc.description AS road_tenure_status,
                     ra.road_application_id,
                     rasc.description AS road_application_status,
-          					t.road_tenure_status_code,
+          			t.road_tenure_status_code,
                     mf.map_feature_id,
                     rs.road_section_id,
                     rssc.description AS road_section_status,
