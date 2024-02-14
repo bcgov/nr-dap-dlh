@@ -53,6 +53,6 @@ with corp_data as (
 --insert into pmt_dpl.dim_ministry
 select * from corp_data
 where ministry_code is not null
-;
+
 
 {% endsnapshot %}

@@ -59,6 +59,6 @@ select * from rrs_rup_data
 
 union ALL
 select * from rrs_rp_data
-;
+
 
 {% endsnapshot %}
