@@ -5,7 +5,7 @@
           target_schema='pmt_dpl',
           strategy='check',
           unique_key='unqid',
-          check_cols=['permit_status_description'],
+          check_cols=['permit_type_description'],
 		  invalidate_hard_deletes=True,
           bind=False,
         )
@@ -56,6 +56,6 @@ select * from rrs_rup_data
 
 union ALL
 select * from rrs_rp_data
-;
+
 
 {% endsnapshot %}

@@ -24,6 +24,6 @@ with corp_data as (
 --insert into pmt_dpl.dim_business_area
 select *
 	from corp_data
-;
+
 
 {% endsnapshot %}
