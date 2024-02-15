@@ -5,7 +5,7 @@
           target_schema='pmt_dpl',
           strategy='check',
           unique_key='unqid',
-          check_cols=['project_code'],
+          check_cols='all',
 		  invalidate_hard_deletes=True,
           bind=False,
         )
@@ -15,7 +15,6 @@ with ats_data as
 (  select distinct
   'ATS' 						as src_sys_code
   ,proj.location 				as location_code
-  ,proj.project_name 			as project_code
   ,'ATS' || '|'||  coalesce(cast(proj.location as varchar),'~') as unqid
 from fdw_ods_ats_replication.ats_projects proj
 inner join fdw_ods_ats_replication.ats_managing_fcbc_regions amfr
@@ -27,7 +26,6 @@ where proj.project_status_code = '1'
   Select 
   'FTA' 						as src_sys_code
   ,null 						as location_code
-  ,null 						as project_code
   ,'FTA' || '|'||  coalesce(cast(null as varchar),'~') as unqid
 )
 , RRS_RP_data as 
@@ -35,7 +33,6 @@ where proj.project_status_code = '1'
   Select
   'RRS_RP' 						as src_sys_code
   ,null 						as location_code
-  ,null 						as project_code
   ,'RRS_RP' || '|'||  coalesce(cast(null as varchar),'~') as unqid
 )
 , RRS_RUP_data as 
@@ -43,7 +40,6 @@ where proj.project_status_code = '1'
   Select
   'RRS_RUP' 						as src_sys_code
   ,null 						as location_code
-  ,null 						as project_code
   ,'RRS_RP' || '|'||  coalesce(cast(null as varchar),'~') as unqid
 )--insert into pmt_dpl.dim_location
 select * from ats_data
