@@ -5,7 +5,7 @@
           target_schema='pmt_dpl',
           strategy='check',
           unique_key='unqid',
-          check_cols=['project_name','location','project_status_code','region_name'],
+          check_cols=['project_name','project_location_code','project_status_code','project_region_description'],
 		  invalidate_hard_deletes=True,
           bind=False,
         )
@@ -16,7 +16,7 @@ with ats_data as (
 	prj.project_id:: varchar(20),  
 	--replace(replace(prj.location::text, chr(10), NULL::text), chr(13), NULL::text) AS project_location, ---not sure what these replace values are supposed to do? returns null
 	prj.project_name,
-	prj.location,
+	prj.location as project_location_code,
 	prj.project_status_code,
 	amfr.region_name as project_region_description,
 	'ATS' || '|'||  coalesce(cast(prj.project_id as varchar),'~') as unqid
@@ -30,7 +30,7 @@ fta_data as (
 	Select distinct 'FTA'	as src_sys_code
 	,null as project_id
 	,null as project_name
-	,null as location
+	,null as project_location_code
 	,null as project_status_code
 	,null as project_region_description
 	,'FTA' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
@@ -41,7 +41,7 @@ rrs_rp_data as (
 	Select 'RRS_RP'	as src_sys_code
 	,null as project_id
 	,null as project_name
-	,null as location
+	,null as project_location_code
 	,null as project_status_code
 	,null as project_region_description
 	,'RRS_RP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
@@ -51,7 +51,7 @@ rrs_rup_data as (
 	Select 'RRS_RUP'	as src_sys_code
 	,null as project_id
 	,null as project_name
-	,null as location
+	,null as project_location_code
 	,null as project_status_code
 	,null as project_region_description
 	,'RRS_RUP' || '|'||  coalesce(cast(null as varchar(5)),'~') as unqid
