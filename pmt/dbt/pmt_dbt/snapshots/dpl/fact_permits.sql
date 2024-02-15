@@ -5,7 +5,7 @@
           target_schema='pmt_dpl',
           strategy='check',
           unique_key='unqid',
-          check_cols=['ministry_code','business_area_code','permit_status_code','permit_status_date','permit_issue_date','app_received_date','app_update_dateapp_update_date','app_decision_date','app_decision_date','app_issuance_date','app_accepted_date','app_rejected_date','app_adjudication_date','harvest_area_sq_m','harvest_auth_status','map_feature_id','permit_type_code'],
+          check_cols=['ministry_code','business_area_code','permit_status_code','permit_status_date','permit_issue_date','app_received_date','app_update_date','app_decision_date','app_decision_date','app_issuance_date','app_accepted_date','app_rejected_date','app_adjudication_date','harvest_area_sq_m','harvest_auth_status','map_feature_id','permit_type_code'],
 		  invalidate_hard_deletes=True,
           bind=False,
         )
