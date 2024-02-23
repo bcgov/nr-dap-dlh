@@ -44,6 +44,14 @@ rrs_rup_data as (
 	,'Road Use Permit' as permit_type_description
 	,'RRS_RUP' || '|'||  coalesce(cast('RUP' as varchar(25)),'~') as unqid
 )
+,
+lexis_data as (
+	Select 'LEXIS'	as src_sys_code
+	,'EXP' as permit_type_code
+	,'Log Export Permit' as permit_type_description
+	,'LEXIS' || '|'||  coalesce(cast('EXP' as varchar(25)),'~') as unqid
+)
+
 --insert into pmt_dpl.dim_permit_type
 select *
 	from ats_data
@@ -56,6 +64,10 @@ select * from rrs_rup_data
 
 union ALL
 select * from rrs_rp_data
+
+union all
+select * from lexis_data
+
 
 
 {% endsnapshot %}
