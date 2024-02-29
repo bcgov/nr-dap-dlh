@@ -5,7 +5,7 @@
           target_schema='pmt_dpl',
           strategy='check',
           unique_key='unqid',
-          check_cols=['ministry_code','business_area_code','permit_status_code','permit_status_date','permit_issue_date','app_received_date','app_update_date','app_decision_date','app_decision_date','app_issuance_date','app_accepted_date','app_rejected_date','app_adjudication_date','harvest_area_sq_m','harvest_auth_status','map_feature_id','permit_type_code'],
+          check_cols=['ministry_code','business_area_code','permit_status_code','permit_status_date','permit_issue_date','app_received_date','app_update_date','app_decision_date','app_issuance_date','app_accepted_date','app_rejected_date','app_adjudication_date','harvest_area_sq_m','harvest_auth_status','map_feature_id','permit_type_code'],
 		  invalidate_hard_deletes=True,
           bind=False,
         )
@@ -34,31 +34,31 @@ with ats_data as (
    END as business_area_code
    ,ats.authorization_id::varchar 		as application_id
   ,null ::varchar 						as permit_id
-  ,ats.file_number 						as app_file_id
+  ,ats.file_number						as app_file_id
   ,ats.authorization_status_code 		as authorization_status_code
-  ,ats.project_id::varchar(20)			as project_id
-  ,null 								as permit_status_code
-  ,null::date  								as permit_status_date
-  ,null::date  								as permit_issue_date
-  ,null::date 							as permit_issue_expire_date
+  ,ats.project_id::varchar(20)		as project_id
+  ,null							as permit_status_code
+  ,null::date 								as permit_status_date
+  ,null::date								as permit_issue_date
+  ,null::date							as permit_issue_expire_date
   ,ats.application_received_date 		as app_received_date
-  ,coalesce(ats.fcbc_process_complete_date, ats.adjudication_date,ats.application_accepted_date,ats.application_accepted_date )			  as app_update_date
+  ,coalesce(ats.fcbc_process_complete_date, ats.adjudication_date,ats.application_accepted_date,ats.application_accepted_date)			  as app_update_date
   ,ats.fcbc_process_complete_date 		as app_decision_date
   ,ats.adjudication_date 				as app_issuance_date
   ,ats.application_accepted_date 		as app_accepted_date
-  ,null::date 							as app_rejected_date
-  ,ats.adjudication_date 				as app_adjudication_date
-  ,null 								as harvest_auth_status
-  ,null::int 							as harvest_area_sq_m
-  ,null 								as permit_org_unit_code
+  ,null::date							as app_rejected_date
+  ,ats.adjudication_date  				as app_adjudication_date
+  ,null							as harvest_auth_status
+  ,null::int						as harvest_area_sq_m
+  ,null								as permit_org_unit_code
   ,floor(
           CASE
               WHEN ats.adjudication_date IS NULL THEN EXTRACT(epoch FROM CURRENT_DATE::timestamp without time zone - ats.application_received_date) / 86400
               ELSE EXTRACT(epoch FROM ats.adjudication_date - ats.application_received_date) / 86400
           END) 							AS application_age
-  ,null::bigint 								as map_feature_id
-  ,ats.authorization_instrument_id::varchar(30) 		as permit_type_code
-  ,'ATS' || '|'||  coalesce(cast(ats.authorization_id as varchar),'~')||'|'||coalesce(cast(ats.file_number as varchar),'~') as unqid
+  ,null::bigint								as map_feature_id
+  ,ats.authorization_instrument_id::varchar(30)		as permit_type_code
+  ,'ATS' || '|'||  coalesce(cast(ats.authorization_id as varchar),'~')||'|'||coalesce(cast(ats.project_id as varchar),'~') as unqid
 from fdw_ods_ats_replication.ats_authorizations ats
 LEFT JOIN fdw_ods_ats_replication.ats_authorization_status_codes aasc
   ON(ats.authorization_status_code = aasc.authorization_status_code)
@@ -512,7 +512,8 @@ UNION ALL
                     rs.geometry_road_section_guid
                    FROM fdw_ods_rrs_replication.resource_road_tenure t
                      JOIN fdw_ods_rrs_replication.road_application ra ON encode(ra.resource_road_tenure_guid, 'hex') = encode(t.resource_road_tenure_guid, 'hex')
-                     JOIN fdw_ods_rrs_replication.road_appl_map_feature mf ON encode(mf.road_application_guid, 'hex') = encode(ra.road_application_guid, 'hex')
+                     JOIN (Select *, row_number()over( partition by encode(road_application_guid, 'hex') order by map_feature_id desc ) rn from fdw_ods_rrs_replication.road_appl_map_feature ) mf 
+                     ON (encode(mf.road_application_guid, 'hex') = encode(ra.road_application_guid, 'hex') and mf.rn =1)
                      JOIN fdw_ods_rrs_replication.road_section rs ON encode(mf.feature_record_guid, 'hex') = encode(rs.road_section_guid, 'hex')
                      JOIN fdw_ods_rrs_replication.road_feature_class_sdw fc ON encode(mf.road_feature_class_sdw_guid, 'hex') = encode(fc.road_feature_class_sdw_guid, 'hex')
                      JOIN fdw_ods_rrs_replication.road_org_unit_sdw ou ON encode(ou.road_org_unit_sdw_guid, 'hex') = encode(ra.metadata_org_unit_sdw_guid, 'hex')
