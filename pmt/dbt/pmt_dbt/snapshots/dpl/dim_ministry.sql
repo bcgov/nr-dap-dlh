@@ -35,10 +35,10 @@ with corp_data as (
                       WHEN ats.authorization_instrument_id = ANY (ARRAY[1282, 1281, 1343, 1344, 1361, 1301, 1302, 1303, 1304, 1283, 60, 1341, 1305, 1306, 1342, 21, 107]) THEN 'ENV'
                       ELSE NULL
                   END as varchar),'~') as unqid
-  from fdw_ods_ats_replication.ats_authorizations ats
-  LEFT JOIN fdw_ods_ats_replication.ats_authorization_status_codes aasc
+  from {{ source('ats','ats_authorizations') }} ats
+  LEFT JOIN {{ source('ats','ats_authorization_status_codes') }} aasc
     ON(ats.authorization_status_code = aasc.authorization_status_code)
-  LEFT JOIN fdw_ods_ats_replication.ats_authorization_instruments aai
+  LEFT JOIN {{ source('ats','ats_authorization_instruments') }} aai
     ON(ats.authorization_instrument_id = aai.authorization_instrument_id)
   where 1=1
   AND aasc.authorization_status_code <> '1'

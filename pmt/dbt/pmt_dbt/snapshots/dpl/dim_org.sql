@@ -27,9 +27,9 @@ with corp_data as (
 	        when org.rollup_dist_code in ('DSC','DSQ','DCK','DNI','DSI','DQC','DCR') then 'Coast Area' end as roll_up_area_description
 	  -- Combine multiple keys into a single composite_key
       ,'CORP' || '|'||  coalesce(cast(org.org_unit_code as varchar),'~') as unqid
-	from fdw_ods_fta_replication.org_unit org
-	left join fdw_ods_fta_replication.org_unit reg on (org.rollup_region_code = reg.org_unit_code)
-	left join fdw_ods_fta_replication.org_unit rdis on (org.rollup_dist_code = rdis.org_unit_code)
+	from {{ source('fta','org_unit') }} org
+	left join {{ source('fta','org_unit') }} reg on (org.rollup_region_code = reg.org_unit_code)
+	left join {{ source('fta','org_unit') }} rdis on (org.rollup_dist_code = rdis.org_unit_code)
 	)
 --insert into pmt_dpl.dim_org
   select * from corp_data

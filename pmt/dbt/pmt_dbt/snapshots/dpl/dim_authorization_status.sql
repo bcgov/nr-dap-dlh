@@ -16,7 +16,7 @@ Select 'ATS' as src_sys_code
 ,aasc.authorization_status_code as authorization_status_code
 ,aasc.name as authorization_status_description
 ,'ATS' || '|'||  coalesce(cast(aasc.authorization_status_code as varchar),'~') as unqid
-from  fdw_ods_ats_replication.ats_authorization_status_codes aasc
+from  {{source ('ats','ats_authorization_status_codes') }} aasc
 where 1=1
 ),
 fta_data as (
@@ -25,7 +25,7 @@ fta_data as (
 	,tasc.tenure_application_state_code as authorization_status_code
 	,tasc.description AS authorization_status_description
 	,'FTA' || '|'||  coalesce(cast(tasc.tenure_application_state_code as varchar),'~') as unqid
-	FROM fdw_ods_fta_replication.tenure_application_state_code tasc
+	FROM {{source ('fta','tenure_application_state_code') }} tasc
 )
 ,rrs_rp_data as (
   Select distinct
@@ -33,7 +33,7 @@ fta_data as (
   ,rasc.road_application_status_code as authorization_status_code
   ,rasc.description AS authorization_status_description
   ,'RRS_RP' || '|'||  coalesce(cast(rasc.road_application_status_code as varchar),'~') as unqid
-  FROM fdw_ods_rrs_replication.road_application_status_code rasc
+  FROM {{source ('rrs','road_application_status_code') }} rasc
 )
 ,rrs_rup_data as (
   Select distinct
@@ -41,8 +41,8 @@ fta_data as (
   ,rs.submission_status_code as authorization_status_code
   ,ssc.description AS authorization_status_description
   ,'RRS_RUP' || '|'||  coalesce(cast(rs.submission_status_code as varchar),'~') as unqid
-  FROM fdw_ods_rrs_replication.road_submission rs
-  left join  fdw_ods_rrs_replication.submission_status_code ssc ON (rs.submission_status_code = ssc.submission_status_code)
+  FROM {{source ('rrs','road_submission') }} rs
+  left join  {{source ('rrs','submission_status_code') }} ssc ON (rs.submission_status_code = ssc.submission_status_code)
   where 1=1
   and rs.road_submission_type_code = 'RUP' 
   and rs.submission_status_code is not null

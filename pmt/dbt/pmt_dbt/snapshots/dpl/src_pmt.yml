@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: ats
+    #database: raw  
+    schema: fdw_ods_ats_replication  
+    tables:
+      - name: ats_projects
+      - name: ats_managing_fcbc_regions
+      - name: ats_authorization_status_codes
+      - name: ats_authorizations
+      - name: ats_authorization_instruments
+
+  - name: fta
+    schema: fdw_ods_fta_replication
+    tables:
+      - name: tenure_application_state_code
+      - name: org_unit
+      - name: harvest_auth_status_code
+      - name: prov_forest_use
+      - name: file_type_code
+      - name: harvesting_authority
+      - name: harvest_authority_geom
+      - name: harvest_type_code
+      - name: tenure_application_map_feature
+      - name: tenure_application
+      - name: tenure_application_type_code
+
+
+  - name: rrs
+    schema: fdw_ods_rrs_replication
+    tables:
+      - name: road_application_status_code
+      - name: road_submission
+      - name: submission_status_code
+      - name: road_tenure_status_code
+      - name: road_tenure_type_code
+      - name: road_section_status_code
+      - name: road_org_unit_sdw
+      - name: road_feature_class_sdw
+      - name: road_section
+      - name: road_appl_map_feature
+      - name: road_application
+      - name: resource_road_tenure
+      
+
+
+
+
+
+
+
+
+
+      

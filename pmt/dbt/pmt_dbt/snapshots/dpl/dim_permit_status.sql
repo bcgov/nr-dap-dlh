@@ -23,7 +23,7 @@ with ats_data as (
 	,hsc.harvest_auth_status_code as permit_status_code
 	,hsc.description as permit_status_description
 	,'FTA' || '|'||  coalesce(cast(hsc.harvest_auth_status_code as varchar),'~') as unqid
-	FROM fdw_ods_fta_replication.harvest_auth_status_code hsc
+	FROM {{ source('fta','harvest_auth_status_code') }} hsc
 )
 ,rrs_rp_data as (
   Select distinct
@@ -31,7 +31,7 @@ with ats_data as (
   ,rtsc.road_tenure_status_code as permit_status_code
   ,rtsc.description AS permit_status_description
   ,'RRS_RP' || '|'||  coalesce(cast(rtsc.road_tenure_status_code as varchar),'~') as unqid
-  FROM fdw_ods_rrs_replication.road_tenure_status_code rtsc
+  FROM {{ source('rrs','road_tenure_status_code') }} rtsc
 )
 ,rrs_rup_data as (
   Select distinct

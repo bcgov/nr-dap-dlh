@@ -16,8 +16,10 @@ with ats_data as
   'ATS' 						as src_sys_code
   ,proj.location 				as location_code
   ,'ATS' || '|'||  coalesce(cast(proj.location as varchar),'~') as unqid
-from fdw_ods_ats_replication.ats_projects proj
-inner join fdw_ods_ats_replication.ats_managing_fcbc_regions amfr
+--from fdw_ods_ats_replication.ats_projects proj
+--inner join fdw_ods_ats_replication.ats_managing_fcbc_regions amfr
+from {{ source('ats','ats_projects') }} proj
+inner join {{ source('ats','ats_managing_fcbc_regions') }} amfr
 on (proj.managing_fcbc_region_id = amfr.managing_fcbc_region_id)
 where proj.project_status_code = '1'
 )

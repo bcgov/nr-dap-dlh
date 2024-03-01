@@ -20,8 +20,8 @@ with ats_data as (
 	prj.project_status_code,
 	amfr.region_name as project_region_description,
 	'ATS' || '|'||  coalesce(cast(prj.project_id as varchar),'~') as unqid
-	  from fdw_ods_ats_replication.ats_projects prj
-	  left join fdw_ods_ats_replication.ats_managing_fcbc_regions amfr  ---dim_regions
+	  from {{source ('ats','ats_projects') }} prj
+	  left join {{source ('ats','ats_managing_fcbc_regions') }} amfr  ---dim_regions
 		on (prj.managing_fcbc_region_id = amfr.managing_fcbc_region_id )
 		where 1=1
 		and prj.project_status_code = '1'

@@ -16,7 +16,7 @@ with ats_data as (
 	  ,aai.authorization_instrument_id::varchar(25)	as permit_type_code
 	  ,aai.authorization_instrument_name	as permit_type_description
 	  ,'ATS' || '|'||  coalesce(cast(aai.authorization_instrument_id as varchar),'~')	as unqid
-	from fdw_ods_ats_replication.ats_authorization_instruments aai 
+	from {{source ('ats','ats_authorization_instruments') }} aai 
 	where 1=1
 )
 ,
@@ -25,8 +25,8 @@ fta_data as (
 	 ,pfu.file_type_code::varchar(25)	AS permit_type_code
 	, ftc.description	AS permit_type_description
 	,'FTA' || '|'||  coalesce(cast(pfu.file_type_code as varchar(25)),'~') as unqid
-	 from fdw_ods_fta_replication.prov_forest_use pfu
-	 left join fdw_ods_fta_replication.file_type_code ftc 
+	 from {{source ('fta','prov_forest_use') }} pfu
+	 left join {{source ('fta','file_type_code') }} ftc 
 		ON (ftc.file_type_code = pfu.file_type_code)
 )
 ,
@@ -35,7 +35,7 @@ rrs_rp_data as (
 	,rttc.road_tenure_type_code as permit_type_code
 	,rttc.description 			as permit_type_description
 	,'RRS_RP' || '|'||  coalesce(cast(rttc.road_tenure_type_code as varchar(25)),'~') as unqid
-	from fdw_ods_rrs_replication.road_tenure_type_code rttc
+	from {{source ('rrs','road_tenure_type_code') }} rttc
 )
 ,
 rrs_rup_data as (

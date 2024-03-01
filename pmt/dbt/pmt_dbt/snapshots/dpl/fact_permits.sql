@@ -59,10 +59,10 @@ with ats_data as (
   ,null::bigint								as map_feature_id
   ,ats.authorization_instrument_id::varchar(30)		as permit_type_code
   ,'ATS' || '|'||  coalesce(cast(ats.authorization_id as varchar),'~')||'|'||coalesce(cast(ats.project_id as varchar),'~') as unqid
-from fdw_ods_ats_replication.ats_authorizations ats
-LEFT JOIN fdw_ods_ats_replication.ats_authorization_status_codes aasc
+from {{source ('ats','ats_authorizations') }} ats
+LEFT JOIN {{source ('ats','ats_authorization_status_codes') }} aasc
   ON(ats.authorization_status_code = aasc.authorization_status_code)
-LEFT JOIN fdw_ods_ats_replication.ats_authorization_instruments aai
+LEFT JOIN {{source ('ats','ats_authorization_instruments') }} aai
   ON(ats.authorization_instrument_id = aai.authorization_instrument_id)
 where 1=1
 AND aasc.authorization_status_code = '1'
@@ -193,26 +193,26 @@ from
                     harvesting_authority.is_cp_extension_appl_fee_paid,
                     harvesting_authority.is_within_fibre_recovery_zone,
                     harvesting_authority.harvesting_authority_guid
-                   FROM fdw_ods_fta_replication.harvesting_authority
+                   FROM {{source ('fta','harvesting_authority') }}
                   WHERE (harvesting_authority.forest_file_id IN ( SELECT zz.forest_file_id
                            FROM ( SELECT a.forest_file_id,
                                     count(a.cutting_permit_id) AS count
-                                   FROM fdw_ods_fta_replication.harvesting_authority a
+                                   FROM {{source ('fta','harvesting_authority') }} a
                                      JOIN ( SELECT DISTINCT harvesting_authority_1.forest_file_id
-   FROM fdw_ods_fta_replication.harvesting_authority harvesting_authority_1
+   FROM {{source ('fta','harvesting_authority') }} harvesting_authority_1
   WHERE harvesting_authority_1.cutting_permit_id IS NULL) z ON a.forest_file_id = z.forest_file_id
                                   GROUP BY a.forest_file_id
                                  HAVING count(a.cutting_permit_id) = 0) zz))) hva
-             JOIN fdw_ods_fta_replication.prov_forest_use pfu ON hva.forest_file_id = pfu.forest_file_id
-             JOIN fdw_ods_fta_replication.file_type_code ftc ON ftc.file_type_code = pfu.file_type_code
-             LEFT JOIN fdw_ods_fta_replication.harvest_authority_geom hag ON hva.hva_skey = hag.hva_skey
-             JOIN fdw_ods_fta_replication.harvest_type_code htc ON hva.harvest_type_code = htc.harvest_type_code
-             JOIN fdw_ods_fta_replication.harvest_auth_status_code hasc ON hasc.harvest_auth_status_code = hva.harvest_auth_status_code
-           LEFT JOIN fdw_ods_fta_replication.tenure_application_map_feature tamf ON tamf.map_feature_id = hag.map_feature_id
-             LEFT JOIN fdw_ods_fta_replication.tenure_application ta ON ta.forest_file_id = hva.forest_file_id and hva.cutting_permit_id = ta.cutting_permit_id
-             left join fdw_ods_fta_replication.org_unit ou on (ta.org_unit_no = ou.org_unit_no)
-             LEFT JOIN fdw_ods_fta_replication.tenure_application_state_code tasc ON tasc.tenure_application_state_code = ta.tenure_application_state_code
-             LEFT JOIN fdw_ods_fta_replication.tenure_application_type_code tatc ON tatc.tenure_application_type_code = ta.tenure_application_type_code
+             JOIN {{source ('fta','prov_forest_use') }} pfu ON hva.forest_file_id = pfu.forest_file_id
+             JOIN {{source ('fta','file_type_code') }} ftc ON ftc.file_type_code = pfu.file_type_code
+             LEFT JOIN {{source ('fta','harvest_authority_geom') }} hag ON hva.hva_skey = hag.hva_skey
+             JOIN {{source ('fta','harvest_type_code') }} htc ON hva.harvest_type_code = htc.harvest_type_code
+             JOIN {{source ('fta','harvest_auth_status_code') }} hasc ON hasc.harvest_auth_status_code = hva.harvest_auth_status_code
+           LEFT JOIN {{source ('fta','tenure_application_map_feature') }} tamf ON tamf.map_feature_id = hag.map_feature_id
+             LEFT JOIN {{source ('fta','tenure_application') }} ta ON ta.forest_file_id = hva.forest_file_id and hva.cutting_permit_id = ta.cutting_permit_id
+             left join {{source ('fta','org_unit') }} ou on (ta.org_unit_no = ou.org_unit_no)
+             LEFT JOIN {{source ('fta','tenure_application_state_code') }} tasc ON tasc.tenure_application_state_code = ta.tenure_application_state_code
+             LEFT JOIN {{source ('fta','tenure_application_type_code') }} tatc ON tatc.tenure_application_type_code = ta.tenure_application_type_code
           WHERE (ftc.file_type_code = ANY (ARRAY['A01', 'A02', 'A03', 'A04', 'A05', 'A11', 'A18', 'A28', 'A29', 'A30', 'A31', 'A41', 'A44', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B15', 'B16', 'E01', 'E02', 'H01', 'H02', 'S01', 'S02'])) AND (tasc.description = ANY (ARRAY['Inbox', 'Lobby']))
 
 UNION ALL
@@ -304,32 +304,32 @@ UNION ALL
                     harvesting_authority.is_cp_extension_appl_fee_paid,
                     harvesting_authority.is_within_fibre_recovery_zone,
                     harvesting_authority.harvesting_authority_guid
-                   FROM fdw_ods_fta_replication.harvesting_authority
+                   FROM {{source ('fta','harvesting_authority') }}
                   WHERE (harvesting_authority.forest_file_id IN ( SELECT zz.forest_file_id
                            FROM ( SELECT a.forest_file_id,
                                     count(a.cutting_permit_id) AS count
-                                   FROM fdw_ods_fta_replication.harvesting_authority a
+                                   FROM {{source ('fta','harvesting_authority') }} a
                                      JOIN ( SELECT DISTINCT harvesting_authority_1.forest_file_id
-   FROM fdw_ods_fta_replication.harvesting_authority harvesting_authority_1
+   FROM {{source ('fta','harvesting_authority') }} harvesting_authority_1
   WHERE harvesting_authority_1.cutting_permit_id IS NOT NULL) z ON a.forest_file_id = z.forest_file_id
                                   GROUP BY a.forest_file_id
                                  HAVING count(a.cutting_permit_id) > 0) zz))) hva
-             JOIN fdw_ods_fta_replication.prov_forest_use pfu ON hva.forest_file_id = pfu.forest_file_id
-             JOIN fdw_ods_fta_replication.file_type_code ftc ON ftc.file_type_code = pfu.file_type_code
-             LEFT JOIN fdw_ods_fta_replication.harvest_authority_geom hag ON hva.hva_skey = hag.hva_skey
-             JOIN fdw_ods_fta_replication.harvest_type_code htc ON hva.harvest_type_code = htc.harvest_type_code
-             JOIN fdw_ods_fta_replication.harvest_auth_status_code hasc ON hasc.harvest_auth_status_code = hva.harvest_auth_status_code
-          LEFT JOIN fdw_ods_fta_replication.tenure_application_map_feature tamf ON tamf.map_feature_id = hag.map_feature_id
+             JOIN {{source ('fta','prov_forest_use') }} pfu ON hva.forest_file_id = pfu.forest_file_id
+             JOIN {{source ('fta','file_type_code') }} ftc ON ftc.file_type_code = pfu.file_type_code
+             LEFT JOIN {{source ('fta','harvest_authority_geom') }} hag ON hva.hva_skey = hag.hva_skey
+             JOIN {{source ('fta','harvest_type_code') }} htc ON hva.harvest_type_code = htc.harvest_type_code
+             JOIN {{source ('fta','harvest_auth_status_code') }} hasc ON hasc.harvest_auth_status_code = hva.harvest_auth_status_code
+          LEFT JOIN {{source ('fta','tenure_application_map_feature') }} tamf ON tamf.map_feature_id = hag.map_feature_id
              LEFT JOIN (
 				select row_number()over(partition by forest_file_id, cutting_permit_id order by tenure_app_id desc) rn, * 
-				from fdw_ods_fta_replication.tenure_application
+				from {{source ('fta','tenure_application') }}
 				) ta ON 
 				ta.forest_file_id = hva.forest_file_id 
 				and hva.cutting_permit_id = ta.cutting_permit_id 
 				and ta.rn =1
-             left join fdw_ods_fta_replication.org_unit ou on (ta.org_unit_no = ou.org_unit_no)
-             LEFT JOIN fdw_ods_fta_replication.tenure_application_state_code tasc ON tasc.tenure_application_state_code = ta.tenure_application_state_code
-             LEFT JOIN fdw_ods_fta_replication.tenure_application_type_code tatc ON tatc.tenure_application_type_code = ta.tenure_application_type_code
+             left join {{source ('fta','org_unit') }} ou on (ta.org_unit_no = ou.org_unit_no)
+             LEFT JOIN {{source ('fta','tenure_application_state_code') }} tasc ON tasc.tenure_application_state_code = ta.tenure_application_state_code
+             LEFT JOIN {{source ('fta','tenure_application_type_code') }} tatc ON tatc.tenure_application_type_code = ta.tenure_application_type_code
           WHERE (ftc.file_type_code = ANY (ARRAY['A01', 'A02', 'A03', 'A04', 'A05', 'A11', 'A18', 'A28', 'A29', 'A30', 'A31', 'A41', 'A44', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B15', 'B16', 'E01', 'E02', 'H01', 'H02', 'S01', 'S02'])) AND (tasc.description = ANY (ARRAY['Inbox', 'Lobby']))
   )fta limit 100
 )
@@ -411,7 +411,7 @@ UNION ALL
 				NULL AS utm_easting,
 				NULL AS utm_northing,
 				NULL AS utm_zone
-			   FROM fdw_ods_rrs_replication.road_submission rs
+			   FROM {{source ('rrs','road_submission') }} rs
 			  WHERE 
 			  rs.road_submission_type_code = 'RUP' AND 
 			  rs.nrsos_smart_form_id IS NOT NULL AND 
@@ -510,19 +510,19 @@ UNION ALL
                     ra.update_date,
                     fou.org_unit_code,
                     rs.geometry_road_section_guid
-                   FROM fdw_ods_rrs_replication.resource_road_tenure t
-                     JOIN fdw_ods_rrs_replication.road_application ra ON encode(ra.resource_road_tenure_guid, 'hex') = encode(t.resource_road_tenure_guid, 'hex')
-                     JOIN (Select *, row_number()over( partition by encode(road_application_guid, 'hex') order by map_feature_id desc ) rn from fdw_ods_rrs_replication.road_appl_map_feature ) mf 
+                   FROM {{source ('rrs','resource_road_tenure') }} t
+                     JOIN {{source ('rrs','road_application') }} ra ON encode(ra.resource_road_tenure_guid, 'hex') = encode(t.resource_road_tenure_guid, 'hex')
+                     JOIN (Select *, row_number()over( partition by encode(road_application_guid, 'hex') order by map_feature_id desc ) rn from {{source ('rrs','road_appl_map_feature') }} ) mf 
                      ON (encode(mf.road_application_guid, 'hex') = encode(ra.road_application_guid, 'hex') and mf.rn =1)
-                     JOIN fdw_ods_rrs_replication.road_section rs ON encode(mf.feature_record_guid, 'hex') = encode(rs.road_section_guid, 'hex')
-                     JOIN fdw_ods_rrs_replication.road_feature_class_sdw fc ON encode(mf.road_feature_class_sdw_guid, 'hex') = encode(fc.road_feature_class_sdw_guid, 'hex')
-                     JOIN fdw_ods_rrs_replication.road_org_unit_sdw ou ON encode(ou.road_org_unit_sdw_guid, 'hex') = encode(ra.metadata_org_unit_sdw_guid, 'hex')
-					 left join  fdw_ods_fta_replication.org_unit fou on (fou.org_unit_name = ou.organization_unit_name)  
-                     LEFT JOIN fdw_ods_rrs_replication.road_application_status_code rasc ON ra.road_application_status_code = rasc.road_application_status_code
-                     LEFT JOIN fdw_ods_rrs_replication.road_tenure_type_code rttc ON t.road_tenure_type_code = rttc.road_tenure_type_code
-                     LEFT JOIN fdw_ods_rrs_replication.road_tenure_status_code rtsc ON t.road_tenure_status_code = rtsc.road_tenure_status_code
-                     LEFT JOIN fdw_ods_rrs_replication.road_section_status_code rssc ON rssc.road_section_status_code = rs.road_section_status_code
-                     LEFT JOIN fdw_ods_rrs_replication.road_submission rsu ON encode(rsu.road_submission_guid, 'hex') = encode(ra.road_submission_guid, 'hex')
+                     JOIN {{source ('rrs','road_section') }} rs ON encode(mf.feature_record_guid, 'hex') = encode(rs.road_section_guid, 'hex')
+                     JOIN {{source ('rrs','road_feature_class_sdw') }} fc ON encode(mf.road_feature_class_sdw_guid, 'hex') = encode(fc.road_feature_class_sdw_guid, 'hex')
+                     JOIN {{source ('rrs','road_org_unit_sdw') }} ou ON encode(ou.road_org_unit_sdw_guid, 'hex') = encode(ra.metadata_org_unit_sdw_guid, 'hex')
+					           left join  {{source ('fta','org_unit') }} fou on (fou.org_unit_name = ou.organization_unit_name)  
+                     LEFT JOIN {{source ('rrs','road_application_status_code') }} rasc ON ra.road_application_status_code = rasc.road_application_status_code
+                     LEFT JOIN {{source ('rrs','road_tenure_type_code') }} rttc ON t.road_tenure_type_code = rttc.road_tenure_type_code
+                     LEFT JOIN {{source ('rrs','road_tenure_status_code') }} rtsc ON t.road_tenure_status_code = rtsc.road_tenure_status_code
+                     LEFT JOIN {{source ('rrs','road_section_status_code') }} rssc ON rssc.road_section_status_code = rs.road_section_status_code
+                     LEFT JOIN {{source ('rrs','road_submission') }} rsu ON encode(rsu.road_submission_guid, 'hex') = encode(ra.road_submission_guid, 'hex')
                   WHERE t.road_tenure_type_code <> 'B40' AND (rsu.road_submission_type_code = ANY (ARRAY['RP'::character varying, 'SRP'::character varying, 'SRL'::character varying]))) z
           WHERE z.road_application_status = ANY (ARRAY['Inbox'::character varying, 'Lobby'::character varying])) rp
 	)rp

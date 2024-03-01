@@ -54,43 +54,43 @@ with extract_data as (
 		   fpt.permit_type_code,
 		   ptp.permit_type_description,
 		   fpt.unqid
-	FROM pmt_dpl.fact_permits fpt
-	left join pmt_dpl.dim_authorization_status ast 
+	FROM {{ ref('fact_permits') }} fpt
+	left join {{ ref('dim_authorization_status') }} ast 
 	  on (fpt.authorization_status_code  = ast.authorization_status_code 
 		 and ast.src_sys_code = fpt.src_sys_code 
 		 and fpt.dbt_valid_to is null 
 		 and ast.dbt_valid_to is null)
-	left join pmt_dpl.dim_business_area bar 
+	left join {{ ref('dim_business_area') }} bar 
 	  on (bar.business_area_code = fpt.business_area_code
 		 and bar.src_sys_code = 'CORP'
 		 and fpt.dbt_valid_to is null 
 		 and bar.dbt_valid_to is null)
-	left join pmt_dpl.dim_ministry mnt 
+	left join {{ ref('dim_ministry') }} mnt 
 	  on (mnt.ministry_code = fpt.ministry_code
 		 and mnt.src_sys_code = 'CORP'
 		 and fpt.dbt_valid_to is null 
 		 and mnt.dbt_valid_to is null)     
-	left join pmt_dpl.dim_org org 
+	left join {{ ref('dim_org') }} org 
 	  on (org.org_unit_code = fpt.permit_org_unit_code
 		 and org.src_sys_code = 'CORP'
 		 and fpt.dbt_valid_to is null 
 		 and org.dbt_valid_to is null)    
-	left join pmt_dpl.dim_permit_status pst
+	left join  {{ ref('dim_permit_status') }} pst
 	  on (pst.permit_status_code = fpt.permit_status_code
 		 and pst.src_sys_code = fpt.src_sys_code
 		 and fpt.dbt_valid_to is null 
 		 and pst.dbt_valid_to is null)    
-	left join pmt_dpl.dim_permit_type ptp
+	left join {{ ref('dim_permit_type') }} ptp
 	  on (ptp.permit_type_code = fpt.permit_type_code
 		 and ptp.src_sys_code = fpt.src_sys_code 
 		 and fpt.dbt_valid_to is null 
 		 and ptp.dbt_valid_to is null)    
-	left join pmt_dpl.dim_project prj
+	left join {{ ref('dim_project') }} prj
 	  on (prj.project_id = fpt.project_id
 		 and prj.src_sys_code = fpt.src_sys_code 
 		 and fpt.dbt_valid_to is null 
 		 and prj.dbt_valid_to is null)  
-	left join pmt_dpl.dim_org atsorg 
+	left join {{ ref('dim_org') }} atsorg 
 	  on (replace(atsorg.org_unit_description,' Natural Resource Region','') = case when prj.project_region_description = 'Kootenay Boundary' then 'Kootenay-Boundary'
 																		when prj.project_region_description ='Thompson Okanagan' then 'Thompson-Okanagan'
 																		when prj.project_region_description ='North East' then 'Northeast'
@@ -98,7 +98,7 @@ with extract_data as (
 		and atsorg.src_sys_code = 'CORP'
 		and atsorg.org_unit_description !~'OBSOLETE' and atsorg.org_unit_description like '%Natural Resource Region%' 
 		and atsorg.dbt_valid_to is null)
-	left join pmt_dpl.dim_source_system ss
+	left join {{ ref('dim_source_system') }} ss
 	  on (ss.src_sys_code = fpt.src_sys_code
 		 and fpt.dbt_valid_to is null 
 		 and ss.dbt_valid_to is null)
