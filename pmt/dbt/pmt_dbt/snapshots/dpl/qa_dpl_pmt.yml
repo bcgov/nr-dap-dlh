@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_org
+    description: This dimension hold organization unit information extracted from FTA
+    columns: 
+      - name: org_unit_code
+        description: This column acts as primary key along with src_sys_code
+        tests:
+          - unique
+          - not_null
+      - name: src_sys_code
+        description: Source system code. This column acts as primary key along with org_unit_code.
+        tests:
+          - accepted_values:
+              values:
+                - CORP
+
+  - name: dim_source_system
+    description: >-
+      This table holds the values for each source system for X-NRS report. Below are source systems values
+    columns:
+      - name: src_sys_code
+        tests:
+          - unique
+          - not_null
+      - name: src_sys_description
+        tests:
+          - unique
+          - not_null
+          
+
