@@ -17,7 +17,7 @@ with DAG(
 ) as dag:
     start_task = DummyOperator(task_id="start_task")
     
-    load_dim_org = KubernetesPodOperator(
+    load_extract_permits = KubernetesPodOperator(
         task_id="task1_load_extract_permits",      
         image="ghcr.io/bcgov/nr-dap-dlh-pmt:main",
         image_pull_policy="Always",
@@ -41,6 +41,6 @@ with DAG(
     )
     
     # Set task dependencies
-    start_task >> task1_load_extract_permits
+    start_task >> load_extract_permits
     
     
