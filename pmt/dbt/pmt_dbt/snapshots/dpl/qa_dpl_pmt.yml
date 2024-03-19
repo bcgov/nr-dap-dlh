@@ -17,8 +17,7 @@ models:
                 - CORP
 
   - name: dim_source_system
-    description: >-
-      This table holds the values for each source system for X-NRS report. Below are source systems values
+    description: This table holds the values for each source system for X-NRS report. Below are source systems values
     columns:
       - name: src_sys_code
         tests:
