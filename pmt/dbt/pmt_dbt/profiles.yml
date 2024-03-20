@@ -7,8 +7,7 @@ pmt_dbt:
       host: theory.bcgov
       port: 5443
       user: dlh_admin_user
-      #pass: "{{ env_var('dlh_password') }}"
-      pass: Agf#6Lhouse723 
+      pass: "{{ env_var('dlh_password') }}"
       dbname: lhousedev
       schema: public
       
