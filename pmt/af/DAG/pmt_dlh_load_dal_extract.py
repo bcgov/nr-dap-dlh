@@ -6,8 +6,8 @@ from airflow.providers.cncf.kubernetes.secret import Secret
 from airflow.models import Variable
 from airflow.operators.dummy import DummyOperator
 
-ods_password = Variable.get("ods_password")
-dlh_password = Variable.get("dlh_password")
+ods_password = Variable.get("ODS_PASSWORD")
+dlh_password = Variable.get("DLH_PASSWORD")
 
 with DAG(
     start_date=datetime(2024, 2, 27),
